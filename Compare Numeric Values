@@ -1,0 +1,42 @@
+# QUESTION:
+# Let’s say I give you two strings that contain digits like “234” and “45”. How do you compare the equivalent numeric values of those two strings without converting them to an integer by the int() method? For example, 234>45 in the above case.
+# If your idea is to compare the very left positions, then you must be careful since 10>2 even though 1<2
+# Make sure your code does not break if the string is empty. Assume we do not give a negative number or non-numeric characters to the program, so you do not need to check them. 
+# However, they can be equal to each other or equal to zero. Print the appropriate message to use if they are equal.
+
+
+# ANSWER:
+
+def compare_numbers(num_1, num_2):
+    num_1 = num_1.strip().lstrip('0') or '0'
+    num_2 = num_2.strip().lstrip('0') or '0'
+
+    if len(num_1) > len(num_2):
+        return f"{num_1} is greater than {num_2}"
+    elif len(num_1) < len(num_2):
+        return f"{num_2} is greater than {num_1}"
+    else:
+        for i in range(len(num_1)):
+            if num_1[i] > num_2[i]:
+                return f"{num_1} is greater than {num_2}"
+            elif num_1[i] < num_2[i]:
+                return f"{num_2} is greater than {num_1}"
+        return f"{num_1} is equal to {num_2}"
+
+def is_valid_number(s):
+    return s.replace('.', '', 1).isdigit()
+
+string_1 = input("\nPlease enter the first string that you would like to convert to integer: ").strip().lstrip('0') or '0'
+if not is_valid_number(string_1):
+    print("\nInvalid input. Please enter digits only with no spaces or characters.")
+    exit()
+print(f"\nNumber 1 = {string_1}")
+
+string_2 = input("\nPlease enter the second string that you would like to convert to integer: ").strip().lstrip('0') or '0'
+if not is_valid_number(string_2):
+    print("\nInvalid input. Please enter digits only with no spaces or characters.")
+    exit()
+print(f"\nNumber 2 = {string_2}")
+
+print(f"\n{compare_numbers(string_1, string_2)}\n")
+
