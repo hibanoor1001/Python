@@ -1,0 +1,59 @@
+# QUESTION:
+# Let’s say we want to check if the sum of two numbers in a list is equal to 10. The list can be very big. We do not want to iterate through the list more than once. Do not use the brute force method.
+# Hint: 
+    # Let’s say our list is [3,4,1,2,9]. In a brute force approach, you can check the first item (i.e. 3) with all the other items in the list and if that is 10, print those two items. 
+    # Otherwise, try the second item and compare it with the third, fourth, and so on. You have to do this comparison for all the items as it is possible no two items in the list add up to 10. 
+    # The problem is if the list has n list, you check each item with the other n-1 items in each iteration. 
+    # Since you have n items, in total you perform n(n-1) comparisons (since you pick one of the n numbers and compare that with the remaining (n-1) numbers). 
+    # But the question asks you not to iterate through the list more than once (n). How can we do that?
+# You should use a more innovative solution. For example, you can use a dictionary where the keys are the list items and the value is 1 if (value=10-item) does not exist. For example, for a list like this:
+# [3,4,1,2,9]
+# The 10-3(first value in the list)=7. We do not have 7 in the dictionary yet (we just started to populate the dictionary). So we insert the 3 in the dictionary and put 1 in its value Key value
+# 3 : 1
+# Then we calculate 10-4(second value in the list)=6. We have just 3 in the dictionary, so we go ahead and add that to the dictionary too: Key value
+# 3 : 1
+# 4 : 1
+# Then 10-1=9. We have 3 and 4 in the dictionary. So, let’s add that to the dictionary:
+# Key value
+# 3 : 1
+# 4 : 1
+# 1 : 1
+# The next one is 10-2=8 Key value
+# 3 : 1
+# 4 : 1
+# 1 : 1
+# 2 : 1
+# Now we come to the last item: 10-9=1. This time we can see that we already have 1 in the dictionary (see the item in the last but one position. So, we found the pair (9 and 1)
+# The beauty of this solution is we did not iterate the list more than once.
+# Now you implement this solution.
+
+
+# ANSWER:
+
+def pairs(numbers_list, total_sum=10):
+    numbers_checked = {}
+    pair_count = 1
+    found_any_pair = False
+
+    for number in numbers_list:
+        number_needed = total_sum - number
+        if number_needed in numbers_checked:
+            print(f"\nHere is pair {pair_count} --> {number_needed} : {number}")
+            pair_count = pair_count + 1
+            found_any_pair = True
+        numbers_checked[number] = 1
+    if not found_any_pair:
+        print("\nNo pairs found")
+
+user_entry_list = input("Enter a list of whole numbers separated by commas (e.g., 3, 4, 1, 2, 9, 8): ").split(',')
+
+numbers_list = []
+for n in user_entry_list:
+    try:
+        num = int(n.strip())
+        numbers_list.append(num)
+    except ValueError:
+        print(f"\nIgnoring invalid input: '{n.strip()}'")
+
+pairs(numbers_list)
+
