@@ -1,0 +1,154 @@
+# QUESTION:
+# Familiarize yourself with PEP (Python Enhancement Proposal). Those are a set of instructions to follow in writing a readable code. 
+# PEP8 is the latest version as of now. Read this link to see what is the meaning of writing a standard code: (https://peps.python.org/pep-0008/)
+# On the other hand, pycodestyle is a tool to check whether your code is PEP8 compliant. https://pep8.readthedocs.io/en/latest/intro.html#error-codes
+# Familiarize yourself with pycodestyle. The process of automatic detection of an issue is called linting. So, this module is an implementation of PEP8. It does static code analysis. So pycodestyle is a linting tool for Python. 
+# You install pycodestyle and you pass the code you want to analyze, and it gives you the report. Please consider that it does not evaluate what your code does, it just cares about the format and style of your code.
+# Create a simple code that violates a few PEP8 guidelines (let’s call it code.py). Then create another file called main.py. When we run main.py we pass the code.py to the main.py in the command line (think sys module). 
+# The main.py imports another module called lint.py (hence import lint). The main.py passes the code.py file to lint.py when it is executed.
+# The lint.py has a few PEP checks for you and it does static code analysis. So we have 3 files, the file that you want to analyze (code.py), the main.py that you pass code.py into it in the command line and import sys module and lint.py and finally the last file that implements linting (lint.py). 
+# We would like to get a report about the code issues or otherwise a successful pass message. You first intentionally create code.py in way that has some linting issue and you will show there is a problem by running the main.py and the report it generate, showing that lint finds some problems and here are the violations. 
+# The report format is not restricted but make sure you generate an intuitive report not just those code like W391. Example what that code means too. Then you fix the problem in code.py and re-run and show that the pass message is given
+
+
+# ANSWER:
+
+#------------------------lint.py------------------------
+import pycodestyle
+from error_codes import explain_error
+
+def analyze_code(file_path):
+    style_guide = pycodestyle.StyleGuide(quiet=True)
+    report = style_guide.check_files([file_path])
+
+    if report.total_errors == 0:
+        print(f"\n{file_path} passed all PEP8 checks!\n")
+    else:
+        print(f"\n{file_path} has {report.total_errors} PEP8 issues:\n")
+
+        for error in report.get_statistics(''):
+            code = error.split()[1]
+            explanation = explain_error(code)
+            print(f"{code} → {explanation}\n")
+
+#------------------------code.py------------------------
+def  hello():
+    print("Hello, World!")
+
+def  goodbye():
+    print("Goodbye, World!")
+
+hello()
+goodbye()
+
+#------------------------main.py------------------------
+import sys
+import lint
+
+def main():
+    if len(sys.argv) < 2:
+        print("\nPython File Name is Missing!\n")
+        return
+
+    file_path = sys.argv[1]
+    lint.analyze_code(file_path)
+
+if __name__ == "__main__":
+    main()
+
+#------------------------error_codes.py------------------------
+def explain_error(code):
+    explanations = {
+        "E101": "Indentation contains mixed spaces and tabs",
+        "E111": "Indentation is not a multiple of four",
+        "E112": "Expected an indented block",
+        "E113": "Unexpected indentation",
+        "E114": "Indentation is not a multiple of four (comment)",
+        "E115": "Expected an indented block (comment)",
+        "E116": "Unexpected indentation (comment)",
+        "E117": "Over-indented",
+        "E121": "Continuation line under-indented for hanging indent",
+        "E122": "Continuation line missing indentation or outdented",
+        "E123": "Closing bracket does not match indentation of opening bracket's line",
+        "E124": "Closing bracket does not match visual indentation",
+        "E125": "Continuation line with same indent as next logical line",
+        "E126": "Continuation line over-indented for hanging indent",
+        "E127": "Continuation line over-indented for visual indent",
+        "E128": "Continuation line under-indented for visual indent",
+        "E129": "Visually indented line with same indent as next logical line",
+        "E131": "Continuation line unaligned for hanging indent",
+        "E133": "Closing bracket is missing indentation",
+        
+        "E201": "Whitespace after '(', '[', or '{'",
+        "E202": "Whitespace before ')', ']', or '}'",
+        "E203": "Whitespace before ',', ';', or ':'",
+        "E211": "Whitespace before '('",
+        "E221": "Multiple spaces before operator",
+        "E222": "Multiple spaces after operator",
+        "E223": "Tab before operator",
+        "E224": "Tab after operator",
+        "E225": "Missing whitespace around operator",
+        "E226": "Missing whitespace around arithmetic operator",
+        "E227": "Missing whitespace around bitwise or shift operator",
+        "E228": "Missing whitespace around modulo operator",
+        "E231": "Missing whitespace after ',', ';', or ':'",
+        "E241": "Multiple spaces after ','",
+        "E242": "Tab after ','",
+        "E251": "Unexpected spaces around keyword / parameter equals",
+        "E261": "At least two spaces before inline comment",
+        "E262": "Inline comment should start with '# '",
+        "E265": "Block comment should start with '# '",
+        "E266": "Too many leading '#' for block comment",
+        "E271": "Multiple spaces after keyword",
+        "E272": "Multiple spaces before keyword",
+        "E273": "Tab after keyword",
+        "E274": "Tab before keyword",
+        "E275": "Missing whitespace after keyword",
+        
+        "E301": "Expected 1 blank line, found 0",
+        "E302": "Expected 2 blank lines, found 0",
+        "E303": "Too many blank lines",
+        "E304": "Blank lines found after function decorator",
+        "E305": "Expected 2 blank lines after end of function or class",
+        "E306": "Expected 1 blank line before a nested definition",
+
+        "E401": "Multiple imports on one line",
+        "E402": "Module level import not at top of file",
+
+        "E501": "Line too long (82 > 79 characters)",
+        "E502": "The backslash is redundant between brackets",
+
+        "E701": "Multiple statements on one line (colon)",
+        "E702": "Multiple statements on one line (semicolon)",
+        "E703": "Statement ends with a semicolon",
+        "E704": "Multiple statements on one line (def)",
+        "E711": "Comparison to None should be 'if cond is None:'",
+        "E712": "Comparison to True should be 'if cond is True:' or 'if cond:'",
+        "E713": "Test for membership should be 'not in'",
+        "E714": "Test for object identity should be 'is not'",
+        "E721": "Do not compare types, use 'isinstance()'",
+        "E722": "Do not use bare except, specify exception instead",
+        "E731": "Do not assign a lambda expression, use a def",
+        "E741": "Do not use variable named 'l', 'O', or 'I'",
+        "E742": "Do not define classes named 'l', 'O', or 'I'",
+        "E743": "Do not define functions named 'l', 'O', or 'I'",
+
+        "E901": "SyntaxError or IndentationError",
+        "E902": "IOError",
+
+        "W191": "Indentation contains tabs",
+
+        "W291": "Trailing whitespace",
+        "W292": "No newline at end of file",
+        "W293": "Blank line contains whitespace",
+
+        "W391": "Blank line at end of file",
+
+        "W503": "Line break before binary operator",
+        "W504": "Line break after binary operator",
+        "W505": "Doc line too long (82 > 79 characters)",
+
+        "W605": "Invalid escape sequence 'x'" 
+    }
+    return explanations.get(code, "Unknown error code. See https://pep8.readthedocs.io/en/latest/intro.html#error-codes")
+
