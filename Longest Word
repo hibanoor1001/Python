@@ -1,0 +1,71 @@
+# QUESTION: 
+# In this question, you write a code that creates a sub-folder in the current folder and it generates a random number of files, but not less than 10 files (at least 10 files). 
+# In each file, the code picks 20 random words from the dictionary.txt file. Each word must be in one line. Your code will search through all files and finds the longest word in each file and show a report like the name of the file and its longest word:
+# File_name: the longest word
+# In the end, it prints the file name(s) that have the longest word(s) among all the generated files
+
+
+# ANSWER:
+# This question was answered in Jupyter Notebook
+
+#-----------------------------------------------------------------------
+import os
+import random
+
+#-----------------------------------------------------------------------
+folder_name = "random_files"
+os.makedirs(folder_name, exist_ok=True)
+
+#-----------------------------------------------------------------------
+with open("dictionary.txt") as f:
+    words = f.read().splitlines()
+
+#-----------------------------------------------------------------------
+num_files = random.randint(10, 15)
+
+for i in range(1, num_files + 1):
+    filename = f"{i}.txt"
+    filepath = os.path.join(folder_name, filename)
+
+    chosen_words = random.sample(words, 20)
+
+    with open(filepath, "w") as f:
+        for word in chosen_words:
+            f.write(word + "\n")
+
+#-----------------------------------------------------------------------
+file_longest_words = {}
+max_length_overall = 0
+
+for filename in os.listdir(folder_name):
+
+    filepath = os.path.join(folder_name, filename)
+
+    longest_word_in_file = ""
+
+    with open(filepath, "r") as f:
+        for line in f:
+            word = line.strip()
+
+            if word == "":
+                continue
+
+            if len(word) > len(longest_word_in_file):
+                longest_word_in_file = word
+
+    if longest_word_in_file != "":
+        file_longest_words[filename] = longest_word_in_file
+
+        if len(longest_word_in_file) > max_length_overall:
+            max_length_overall = len(longest_word_in_file)
+
+#-----------------------------------------------------------------------
+print("The Report for the longest word in each file (file name: the longest word)")
+for file, word in file_longest_words.items():
+    print(f"{file}: {word}")
+
+print("\nFile(s) with the longest word(s) overall:")
+for file, word in file_longest_words.items():
+    if len(word) == max_length_overall:
+        print(f"{file}: {word}")
+
