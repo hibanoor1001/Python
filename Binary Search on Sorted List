@@ -1,0 +1,57 @@
+# QUESTION:
+# Write a code that finds the elements of a sorted list that its index is equal to the item in that index. For example if the list is lst= [-2,0,2,3,6,7,9] then code has to return 2 and 3 since lst[2]=2 and lst[3]=3
+# Hint1: do you think the above question has any relation to the binary search? Think about it. It is a sorted list, so it meets the first condition. 
+# Do you want to search for all the items on the list? What if the list has 1 million elements? Do you want to test 1 million items to see if lst[i]=i? (imagine the last item is the answer and you have to go through the entire list to get to the last item)
+# Can you use this fact that if lst[j]>j then no entry after j can satisfy the given criterion? This is because each element in the list is at least 1 greater than the previous element. For the same reason if lst[j]<j no entry before j can satisfy the given criterion.
+# The above observations can be used directly to create a binary search to find lst[i]=i
+# You can eliminate your search space with the two above conditions.
+# Hint2: you can also consider that if lst[i]=i then lst[i]-i=o. You can use this hint in your binary search too.
+# Solve the above question by employing hint 1 or by hint 2.
+
+
+# ANSWER:
+
+user_entry_list = input("Enter a sorted list of numbers separated by commas (e.g., -2, 0, 2, 3, 4, 7, 9): ").split(',')
+
+num_list = []
+for n in user_entry_list:
+    try:
+        n = int(n.strip())
+        num_list.append(n)
+    except ValueError:
+        print(f"\nIgnoring invalid entry: '{n.strip()}'")
+        continue
+
+start = 0
+end = len(num_list)
+found = False 
+
+while start < end:
+    mid = (start + end) // 2
+
+    if num_list[mid] == mid:
+        print(f"\nList index[{mid}] is equal to the list item {num_list[mid]}")
+        found = True
+       
+        left = mid - 1
+        while left >= start:
+            if num_list[left] == left:
+                print(f"\nList index[{left}] is equal to the list item {num_list[left]}")
+                found = True
+            left = left - 1
+       
+        right = mid + 1
+        while right < end:
+            if num_list[right] == right:
+                print(f"\nList index[{right}] is equal to the list item {num_list[right]}")
+                found = True
+            right = right + 1
+        break
+    elif num_list[mid] > mid: #searching left side
+        end = mid
+    else: #searching right side
+        start = mid + 1
+
+if not found:
+    print("\nNo matching indices found.")
+
