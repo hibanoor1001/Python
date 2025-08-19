@@ -1,0 +1,70 @@
+# QUESTION:
+# We want to implement an autocomplete feature that provides suggestions as a user types a phrase in the search field. The autocomplete is like when we search a phrase in Google and it predicts what we want to search and it suggests a few candidate phrases. 
+# So you start searching for a keyword in the Google search, then it suggests a few items to you to make life easier for you. Then you pick one of those. We want to implement a command line version of the same idea.
+# The list we have in mind currently has a product catalog of around 3 million objects and only wants to autocomplete the product name. Use the products.json in the following link: https://github.com/BestBuyAPIs/open-data-set.
+# These are the BestBuy product names. If you save the products.json on the local desktop and open that in MS Excel, you get some idea about its format.
+# It has a list (i.e. the entire product is in []) that each of its elements is a python dictionary (i.e. they are a list of disctionaries) with keys and values. You are just interested to pick the key = name.
+# The columns C and D sound good candidates to build the dictionary structure. You do not care about the rest. To simplify the solution you can limit the search suggestions to 5 suggestions to users.
+# The file has repeated names like "Corliving". Please merge them into one dictionary record. That means one key "Corliving" will have more than one value. So you will have a dictionary with a key that may have many values and each value is an item in a list.
+# NOTE: If you need to remove the empty lines in the products.json file, it is OK to do that manually.
+# When the user enters a word that is close to one of the keys, then we ask the user if that’s the word that is looking for (if we have more matches, we show a list of words that are close to the user input). 
+# When the user confirms, we show the value(s) of that key. If there is no such key, then we should say there is no such key (specifically when we cannot find anything close to suggest).
+
+
+# ANSWER:
+
+import json
+data = []
+json_file = open ('products.json', encoding="UTF-8")
+json_str = json_file.read()
+json_data = json.loads(json_str)
+
+#for item in range(len(json_data)):
+    #print(json_data[item]["name"])
+
+final_dict = {}
+for item in json_data:
+    name = item.get("name")
+    if name and " - " in name:
+        product, desc = name.split(" - ", 1)
+        if product not in final_dict:
+            final_dict[product] = []
+        final_dict[product].append(desc)
+
+#print(final_dict)
+
+word = input("Enter a word: ").strip().lower()
+prefix = word[:len(word)]
+
+
+product_options = {}
+i = 1
+for product in final_dict:
+    if prefix == product.lower()[:len(word)]:
+        if not product_options:
+            print("\nDoes this match what you are looking for?")
+        print(f"{i} {product}")
+        product_options[i] = product
+        i = i + 1
+
+
+if product_options:
+    try:
+        selected_num = int(input("\nPlease enter the number beside the product name that you would like to lookup: ").strip())
+        final_product = product_options.get(selected_num)
+        if not final_product:
+            print("\nInvalid selection.")
+        else:
+            confirm = input(f"\nDid you mean {final_product}? Enter y if yes, or n if no: ").strip().lower()
+            if confirm == 'y':
+                for desc in final_dict.get(final_product, []):
+                    print("\n" + desc + "\n")
+            elif confirm == 'n':
+                print("\nOkay. Please try again with a different input.")
+            else:
+                print("\nInvalid entry. Please enter only y or n.")
+    except ValueError:
+        print("\nInvalid input. Please enter a valid number.")
+else:
+    print("\nThe word doesn't exist. Please double check your entry!\n")
+
