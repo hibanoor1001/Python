@@ -1,0 +1,130 @@
+# QUESTION:
+# To answer this question, you need to use Python functions, file handlers, and modules. You need to split the codes related to different functions into different files and import them as modules to a main.py file. 
+# So, the only file that that will be run to see the result is the main.py and that file should call other modules as they fit. In the following paragraphs, it is suggested how the modules should look like. 
+# Those are only suggestions and you can follow different names or a different number of modules, but your code must be 1) modularized and 2) at least should have 4 modules, not including the main.py.
+# The code will be run from the command line (not from IDE). The main.py file gets a text file as an argument. Let’s assume the name of the file is file.txt. 
+# Your code processes the content of the file.txt so your code will be run as it’s shown in the following command line:
+# $ python main.py file.txt
+# The content of file.txt is shown below: 
+  # Python is easy to learn and enjoyable. Like other languages, Python provides a complete set of control flow elements, including while and for loops, and conditionals. .
+  # In python, the indent is important ! Things can easily go wrong if you do not follow indentation.
+  # PythoN uses the level of indentation to group blocks of code with control elements.
+# Please consider that you are not supposed to change the format or fix the typos in the file manually, rather if you want to do so, you have to do it programmatically (by Python code). Those are intentionally put in the file to be fixed by your code.
+# Please note that you may need to clean up the content of the file programmatically (not manually) before you start. For example, you may want to convert everything to lowercase (the lower_case module) and delete all the punctuations (the punch_remover module). 
+# You may even want to break the text into a series of words (if you choose to do that, call it the splitter module).
+# Be careful about extra whitespaces. For example, in the second paragraph, it deliberately has two spaces between “python,” and “the indent”. So just relying on the whitespace to find the words is not a reliable solution and it gives the wrong output. 
+# Also “do not” count on the punctuation. For example, it intentionally has two periods at the end of the first paragraph (conditionals. .) or it has ! in the second paragraph.
+# The code gives a report that shows: 
+  # 1) The number of words in the file.txt
+  # 2) The number of times each word in the file.txt occurs without considering the case, so Python and python are the same in your code (suggestion: create the counter module to do this job for you) 
+  # 3) Which word(s) are the most common in the document (suggest creating the most_common module to do this job)
+  # 4) At the end, your code needs to create a folder and saves the report inside a file (you pick the name of the file). This can be done in the report module.
+
+
+# ANSWER:
+
+#------------------------file.txt------------------------
+# Python is easy to learn and enjoyable. Like other languages, Python provides a complete set of control flow elements, including while and for loops, and conditionals. .
+# In python,  the indent is important !  Things can easily go wrong if you do not follow indentation. 
+# PythoN uses the level of indentation to group blocks of code with control elements.
+
+#------------------------lower_case.py------------------------
+def to_lower(text):
+    return text.lower()
+
+#------------------------punch_remover.py------------------------
+import string
+
+def remove_punctuation(text):
+    clean_text = text.translate(str.maketrans('', '', string.punctuation))
+    return clean_text
+
+#------------------------splitter.py------------------------
+def split_words(text):
+    return text.split()
+
+#------------------------counter.py------------------------
+from collections import Counter
+
+def count_words(words_list):
+    return Counter(words_list) #returns a dictionary of words with their counts
+
+#------------------------most_common.py------------------------
+def find_most_common(word_count_dict):
+    if not word_count_dict:
+        return [], 0
+    
+    most_common_words_count = max(word_count_dict.values())
+    most_common_words = []
+
+    for word, count in word_count_dict.items():
+        if count == most_common_words_count:
+            most_common_words.append(word)
+    
+    return most_common_words, most_common_words_count #returns a list of highest ocurring word(s), and the max count
+
+#------------------------report.py------------------------
+import os
+
+def save_report(word_counts, most_common_words, most_common_words_count, total_words, folder_name="report_folder", filename="report.txt"):
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    
+    path = os.path.join(folder_name, filename)
+    
+    with open(path, 'w') as f:
+        f.write(f"Total number of words: {total_words}\n\n")
+        
+        f.write("All word counts:\n")
+        for word, count in sorted(word_counts.items()):
+            f.write(f"{word}: {count}\n")
+        
+        f.write("\n")
+        
+        f.write(f"Most common word(s) (that appeared {most_common_words_count} times):\n")
+        
+        f.write(", ".join(most_common_words) + "\n")
+
+#------------------------main.py------------------------
+import sys
+from lower_case import to_lower
+from punch_remover import remove_punctuation
+from splitter import split_words
+from counter import count_words
+from most_common import find_most_common
+from report import save_report
+
+def main():
+    if len(sys.argv) != 2:
+        print("\nFile Name is Missing!\n")
+        sys.exit(1)
+    
+    filename = sys.argv[1]
+    try:
+        with open(filename, 'r') as f:
+            text = f.read()
+    except FileNotFoundError:
+        print(f"\nFile '{filename}' not found.\n")
+        sys.exit(1)
+    
+    #Processing the text
+    text = to_lower(text)
+    text = remove_punctuation(text)
+    words = split_words(text)
+    
+    word_counts = count_words(words)
+    total_words = sum(word_counts.values())
+    
+    most_common_words, most_common_words_count = find_most_common(word_counts)
+    
+    #Saving the report
+    save_report(word_counts, most_common_words, most_common_words_count, total_words)
+    
+    print("\nReport generated successfully.\n")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
