@@ -1,0 +1,69 @@
+# QUESTION:
+# In this question, you read a text file programmatically that have colons ( : ) as the delimiter between its data elements. You need to pick specific items in the file and write the result into a .csv file. 
+# Ultimately, you will read that .csv file and show the result on the screen. A text file is provided. This is a sample Linux password file. The name of the file is the password.txt file. 
+# Please use that file to test your code. Please consider that if there is no missing data, each row has 10 data elements, separated by colons like:
+    # nobody:*:-2:-2::0:0:Unprivileged User:/var/empty:/usr/bin/false
+# The first item in each line of this file is the user name and the last item shows if that user can get a shell or not. If the user does not get shell access, you see /false at the end of that line like:
+    #_assetcache:*:235:235::0:0:Asset Cache Service:/var/empty:/usr/bin/false
+# This file is not clean. Sometimes we have missing data elements in the file. For example, we have a line like the following line that does not have the first data element before the first colon is missing (that is the user name):
+    # :*:236:236::0:0:Core Media IO Daemon:/var/empty:/usr/bin
+# Also, you may have rows that miss more than one data element. For example in the following lines, we do not even have placeholders for 10 elements (we are missing a few colons):
+    # apple:launch:*:239:0:0:_launchservicesd:/var/empty
+    # orange:launch:*:239:0:/var/empty:/usr/bin
+# We are interested to know about the users that have shell access (hence there is no /false in their corresponding line). 
+# In the output CSV file, we will have just two columns, the user name and the shell program they use (like sh, csh, etc). 
+# Make sure your code filters (ignores) the lines if they do not have “both” of the user name and shell (i.e we are only interested to show the lines that have both the user name and the shell. If only one of them exists, we ignore that line altogether). 
+# Also, make sure you do not include the lines that do not have all the 10 elements or their placeholders. So you do not have to include the “orange” user in the output, in the same data set.
+# The code at the end needs to read the output .csv file to show the result in the notebook.
+
+
+# ANSWER:
+# This question was answered in Jupyter Notebook
+
+#-----------------------------------------------------------------------
+import csv
+import pandas as pd
+
+#-----------------------------------------------------------------------
+with open("password.txt", "r") as file:
+    lines = file.readlines()
+
+#Check first few lines
+for line in lines[:5]:
+    print(line.strip())
+
+#-----------------------------------------------------------------------
+valid_rows = []
+
+for line in lines:
+    parts = line.strip().split(":")
+
+    if len(parts) != 10:
+        continue
+
+    username = parts[0]
+    shell_path = parts[-1]
+
+    if not username or not shell_path:
+        continue
+
+    if shell_path.endswith("/false"):
+        continue
+
+    shell_program = shell_path.split("/")[-1]
+
+    valid_rows.append([username, shell_program])
+
+#Check filtered/clean rows
+valid_rows[:5]
+
+#-----------------------------------------------------------------------
+with open("output.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(["User", "Shell Program"])  #header
+    writer.writerows(valid_rows)
+
+#-----------------------------------------------------------------------
+df = pd.read_csv("output.csv")
+df
+
