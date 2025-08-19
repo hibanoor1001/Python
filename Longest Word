@@ -1,7 +1,7 @@
 # QUESTION: 
 # In this question, you write a code that creates a sub-folder in the current folder and it generates a random number of files, but not less than 10 files (at least 10 files). 
 # In each file, the code picks 20 random words from the dictionary.txt file. Each word must be in one line. Your code will search through all files and finds the longest word in each file and show a report like the name of the file and its longest word:
-# File_name: the longest word
+    # File_name: the longest word
 # In the end, it prints the file name(s) that have the longest word(s) among all the generated files
 
 
